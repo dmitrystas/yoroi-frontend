@@ -95,6 +95,7 @@ export default class LedgerSendStore extends Store {
     try {
       Logger.debug(`${nameof(LedgerSendStore)}::${nameof(this._send)} called: ` + stringifyData(request.params));
       ledgerConnect = new LedgerConnect({
+        connectorUrl: environment.getLedgerUrl(),
         locale: this.stores.profile.currentLocale
       });
 

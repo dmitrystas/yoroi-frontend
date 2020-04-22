@@ -73,7 +73,7 @@ export default class LedgerConnectStore
     = new LocalizedRequest<CreateHardwareWalletFunc>(this.api.ada.createHardwareWallet);
 
   /** While ledger wallet creation is taking place, we need to block users from starting a
-    * ledger wallet creation on a seperate wallet and explain to them why the action is blocked */
+    * ledger wallet creation on a separate wallet and explain to them why the action is blocked */
   @observable isCreateHWActive: boolean = false;
   // =================== API RELATED =================== //
 
@@ -90,7 +90,7 @@ export default class LedgerConnectStore
   }
 
   /** setup() is called when stores are being created
-    * _init() is called when connect dailog is about to show */
+    * _init() is called when connect dialog is about to show */
   _init: void => void = () => {
     Logger.debug('LedgerConnectStore::_init called');
   }
@@ -144,6 +144,7 @@ export default class LedgerConnectStore
   _checkAndStoreHWDeviceInfo: void => Promise<void> = async () => {
     try {
       this.ledgerConnect = new LedgerConnect({
+        connectorUrl: environment.getLedgerUrl(),
         locale: this.stores.profile.currentLocale
       });
       await prepareLedgerConnect(this.ledgerConnect);
@@ -157,6 +158,7 @@ export default class LedgerConnectStore
       let extendedPublicKeyResp: ExtendedPublicKeyResp;
       if (this.ledgerConnect) {
         extendedPublicKeyResp = await this.ledgerConnect.getExtendedPublicKey(accountPath);
+        console.log(extendedPublicKeyResp);
 
         this.hwDeviceInfo = this._normalizeHWResponse({
           ePublicKey: extendedPublicKeyResp.ePublicKey,
@@ -279,7 +281,7 @@ export default class LedgerConnectStore
       if (error instanceof LocalizableError) {
         this.error = error;
       } else {
-        // some unknow error
+        // some unknown error
         this.error = new UnexpectedError();
       }
       this._goToSaveError();

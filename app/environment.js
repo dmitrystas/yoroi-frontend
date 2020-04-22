@@ -34,6 +34,12 @@ export const environment = ((
     commit: process.env.COMMIT || '',
     isJest: () => process.env.NODE_ENV === 'jest' || process.env.NODE_ENV === 'test',
     branch: process.env.BRANCH || '',
+    getLedgerUrl: () => {
+      // if (CONFIG.network.name === NetworkType.TEST) {
+      //   return `http://localhost:8081`; // TODO: don't hardcode port
+      // }
+      return 'https://emurgo.github.io/yoroi-extension-ledger-connect';
+    },
     isDev: () => {
       return CONFIG.network.name === NetworkType.DEVELOPMENT ||
         CONFIG.network.name === NetworkType.SHELLEY_DEV;
@@ -66,6 +72,7 @@ export const environment = ((
     MOBX_DEV_TOOLS: ?string,
     commit: string,
     branch: string,
+    getLedgerUrl: void => string,
     isJest: void => boolean,
     isDev: void => boolean,
     isShelley: void => boolean,
