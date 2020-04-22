@@ -117,11 +117,13 @@ export default class LedgerSendStore extends Store {
 
       await prepareLedgerConnect(ledgerConnect);
 
+      console.log(JSON.stringify(ledgerSignTxDataResp.ledgerSignTxPayload));
       const ledgerSignTxResp: LedgerSignTxResponse =
         await ledgerConnect.signTransaction(
           ledgerSignTxDataResp.ledgerSignTxPayload.inputs,
           ledgerSignTxDataResp.ledgerSignTxPayload.outputs,
         );
+      console.log(JSON.stringify(ledgerSignTxResp));
 
       // There is no need of ledgerConnect after this line.
       // UI was getting blocked for few seconds

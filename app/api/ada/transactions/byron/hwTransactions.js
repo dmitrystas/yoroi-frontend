@@ -8,7 +8,7 @@ import type {
   BaseSignRequest,
 } from '../types';
 import type { UtxoLookupMap }  from '../utils';
-import { utxosToLookupMap, derivePathAsString, verifyAccountLevel }  from '../utils';
+import { utxosToLookupMap, derivePathAsString, toAccountLevel }  from '../utils';
 import type {
   SendFunc,
   TxBodiesFunc,
@@ -124,9 +124,8 @@ function _transformToTrezorInputs(
   return inputs.map((input: TxoPointerType) => {
     const utxo = utxoMap[input.id][input.index];
     const addressingInfo = addressMap.get(utxo.receiver);
-    if (addressingInfo == null) throw new Error('_transformToTrezorInputs should never happen');
-    verifyAccountLevel(addressingInfo);
-    const { addressing } = addressingInfo;
+    if (addressingInfo == null) throw new Error(`${nameof(_transformToTrezorInputs)} should never happen`);
+    const { addressing } = toAccountLevel(addressingInfo);
     return {
       path: derivePathAsString(
         addressing.path[0],
@@ -147,13 +146,13 @@ function _generateTrezorOutputs(
   return txOutputs.map(txOutput => {
     const change = changeAddr.find(addr => addr.address === txOutput.address);
     if (change != null) {
-      verifyAccountLevel({ addressing: change.addressing });
+      const { addressing } = toAccountLevel({ addressing: change.addressing });
       return {
         amount: txOutput.value.toString(),
         path: derivePathAsString(
-          change.addressing.path[0],
-          change.addressing.path[1],
-          change.addressing.path[2],
+          addressing.path[0],
+          addressing.path[1],
+          addressing.path[2],
         )
       };
     }
@@ -219,9 +218,8 @@ function _transformToLedgerInputs(
   return inputs.map(input => {
     const utxo = utxoMap[input.id][input.index];
     const addressingInfo = addressMap.get(utxo.receiver);
-    if (addressingInfo == null) throw new Error('_transformToTrezorInputs should never happen');
-    verifyAccountLevel(addressingInfo);
-    const { addressing } = addressingInfo;
+    if (addressingInfo == null) throw new Error(`${nameof(_transformToLedgerInputs)} should never happen`);
+    const { addressing } = toAccountLevel(addressingInfo);
     return {
       txDataHex: txDataHexMap[input.id],
       outputIndex: input.index,
@@ -242,12 +240,12 @@ function _transformToLedgerOutputs(
     const amountStr = txOutput.value.toString();
     const change = changeAddr.find(addr => addr.address === txOutput.address);
     if (change != null) {
-      verifyAccountLevel({ addressing: change.addressing });
+      const { addressing } = toAccountLevel({ addressing: change.addressing });
       return {
         path: makeCardanoBIP44Path(
-          change.addressing.path[0],
-          change.addressing.path[1],
-          change.addressing.path[2],
+          addressing.path[0],
+          addressing.path[1],
+          addressing.path[2],
         ),
         amountStr,
       };

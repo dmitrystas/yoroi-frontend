@@ -245,6 +245,22 @@ export const generateTransction = () => {
         ),
         amount: '2100000'
       },
+      // ledger-wallet
+      {
+        // Ae2tdPwUPEYyHfxoQYGPhyHuAfLHKfLubzo4kxyw2XDnLsLmACtjufaBs33
+        address: getSingleAddressString(
+          testWallets['ledger-wallet'].mnemonic,
+          [
+            WalletTypePurpose.BIP44,
+            CoinTypes.CARDANO,
+            0 + HARD_DERIVATION_START,
+            ChainDerivations.EXTERNAL,
+            0
+          ],
+          true
+        ),
+        amount: '2000000'
+      },
     ],
     height: 1,
     epoch: 0,

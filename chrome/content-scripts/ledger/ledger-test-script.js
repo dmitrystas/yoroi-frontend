@@ -27,8 +27,6 @@ console.debug('[CS-LEDGER] Loading');
   
   // Passing messages from Extension ==> WebPage
   browserPort.onMessage.addListener(msg => {
-    console.log('bar');
-    console.log(msg);
     window.postMessage(msg, window.location.origin);
   });
   
@@ -40,16 +38,14 @@ console.debug('[CS-LEDGER] Loading');
   
   // Passing messages from WebPage ==> Extension
   window.addEventListener('message', event => {
-    console.log('foozxcvzxcv');
-    console.log(event);
     if(event.origin === ORIGIN && event.data) {
       const { data } = event;
-
       if (data.action === 'ledger-get-extended-public-key') {
         const payload /*: ExtendedPublicKeyResp */ = {
           ePublicKey: {
-            publicKeyHex: '2d7e30fe0be4f5cdcd3bef97fba6a47a56b7058ff6956b357de0d44c69b331f8',
-            chainCodeHex: '7da06fd7af93be6b79b63e0d65a011e31207c92152d7f1cb1a9bf74b44e53cbb',
+            // from ledger-wallet mnemonic
+            publicKeyHex: '95d43af0023cfbfa7acc782b8aa7090b48c021a3b198930dd5ef6e2619aa41e2',
+            chainCodeHex: '958339435e719033a8f56ee395074d0347eaf9c9d2fdbb76de210d90dd504636',
           },
           deviceVersion: {
             major: '1',

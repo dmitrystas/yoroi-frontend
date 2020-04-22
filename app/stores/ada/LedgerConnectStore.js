@@ -158,7 +158,6 @@ export default class LedgerConnectStore
       let extendedPublicKeyResp: ExtendedPublicKeyResp;
       if (this.ledgerConnect) {
         extendedPublicKeyResp = await this.ledgerConnect.getExtendedPublicKey(accountPath);
-        console.log(extendedPublicKeyResp);
 
         this.hwDeviceInfo = this._normalizeHWResponse({
           ePublicKey: extendedPublicKeyResp.ePublicKey,

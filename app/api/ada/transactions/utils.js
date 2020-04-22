@@ -198,17 +198,28 @@ export function derivePathPrefix(accountIndex: number): string {
   return `m/44'/1815'/${accountIndex}'`;
 }
 
-export function verifyAccountLevel(
+export function toAccountLevel(
   addressingInfo: Addressing,
-): void {
+): Addressing {
   const { addressing } = addressingInfo;
-  if (addressing.startLevel !== Bip44DerivationLevels.ACCOUNT.level) {
-    throw new Error('_transformToTrezorInputs only accounts are supported');
+
+  const accountPosition = Bip44DerivationLevels.ACCOUNT.level - addressing.startLevel;
+  if (accountPosition < 0) {
+    throw new Error(`${nameof(toAccountLevel)} addressing does not include bip44 account`);
   }
   const lastLevelSpecified = addressing.startLevel + addressing.path.length - 1;
   if (lastLevelSpecified !== Bip44DerivationLevels.ADDRESS.level) {
-    throw new Error('_transformToTrezorInputs incorrect addressing size');
+    throw new Error(`${nameof(toAccountLevel)} incorrect addressing size`);
   }
+  return {
+    addressing: {
+      startLevel: Bip44DerivationLevels.ACCOUNT.level,
+      path: addressing.path.slice(
+        accountPosition,
+        addressing.path.length,
+      ),
+    },
+  };
 }
 
 export function v3SecretToV2(
