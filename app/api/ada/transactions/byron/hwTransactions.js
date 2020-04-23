@@ -292,7 +292,7 @@ function prepareWitness(
   for (let i = keyLevel; i < ledgerWitness.path.length; i++) {
     finalKey = finalKey.derive(
       RustModule.WalletV2.DerivationScheme.v2(),
-      ledgerWitness.path[3]
+      ledgerWitness.path[i]
     );
   }
 

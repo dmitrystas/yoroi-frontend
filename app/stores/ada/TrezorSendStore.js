@@ -114,7 +114,7 @@ export default class TrezorSendStore extends Store {
       throw new Error(`${nameof(TrezorSendStore)}::${nameof(this._brodcastSignedTx)} should never happen`);
     }
     const { wallets } = this.stores;
-    await this.broadcastTrezorSignedTxRequest.execute({
+    const signedTxResponse = await this.broadcastTrezorSignedTxRequest.execute({
       broadcastRequest: {
         signedTxRequest: {
           id: trezorSignTxResp.payload.hash,
@@ -124,6 +124,23 @@ export default class TrezorSendStore extends Store {
       },
       refreshWallet: () => wallets.refreshWalletFromRemote(publicDeriver),
     }).promise;
+    if (signedTxResponse == null) throw new Error('Should never happen');
+
+    const memo = this.stores.substores.ada.transactionBuilderStore.memo;
+    if (memo !== '' && memo !== undefined) {
+      try {
+        await this.actions.memos.saveTxMemo.trigger({
+          publicDeriver,
+          memo: {
+            Content: memo,
+            TransactionHash: signedTxResponse.txId,
+            LastUpdated: new Date(),
+          },
+        });
+      } catch (error) {
+        Logger.error(`${nameof(TrezorSendStore)}::${nameof(this._brodcastSignedTx)} error: ` + stringifyError(error));
+      }
+    }
 
     this.actions.dialogs.closeActiveDialog.trigger();
 

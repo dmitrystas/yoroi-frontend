@@ -8,6 +8,10 @@ import type {
 
 import Store from '../base/Store';
 import environment from '../../environment';
+import {
+  Logger,
+  stringifyError
+} from '../../utils/logging';
 
 import LocalizedRequest from '../lib/LocalizedRequest';
 import LocalizableError from '../../i18n/LocalizableError';
@@ -164,8 +168,8 @@ export default class LedgerSendStore extends Store {
       throw new Error(`${nameof(this._prepareAndBroadcastSignedTx)} public deriver has no levels`);
     }
 
-    await this.broadcastLedgerSignedTxRequest.execute({
-      broadcast: async () => await this.api.ada.prepareAndBroadcastLedgerSignedTx({
+    const signedTxResponse = await this.broadcastLedgerSignedTxRequest.execute({
+      broadcast: () => this.api.ada.prepareAndBroadcastLedgerSignedTx({
         getPublicKey: withPublicKey.getPublicKey,
         keyLevel: withLevels.getParent().getPublicDeriverLevel(),
         ledgerSignTxResp,
@@ -174,6 +178,23 @@ export default class LedgerSendStore extends Store {
       }),
       refreshWallet: () => wallets.refreshWalletFromRemote(publicDeriver),
     }).promise;
+    if (signedTxResponse == null) throw new Error('Should never happen');
+
+    const memo = this.stores.substores.ada.transactionBuilderStore.memo;
+    if (memo !== '' && memo !== undefined) {
+      try {
+        await this.actions.memos.saveTxMemo.trigger({
+          publicDeriver,
+          memo: {
+            Content: memo,
+            TransactionHash: signedTxResponse.txId,
+            LastUpdated: new Date(),
+          },
+        });
+      } catch (error) {
+        Logger.error(`${nameof(LedgerSendStore)}::${nameof(this._prepareAndBroadcastSignedTx)} error: ` + stringifyError(error));
+      }
+    }
 
     this.actions.dialogs.closeActiveDialog.trigger();
 
