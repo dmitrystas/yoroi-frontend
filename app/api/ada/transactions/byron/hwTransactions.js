@@ -8,7 +8,7 @@ import type {
   BaseSignRequest,
 } from '../types';
 import type { UtxoLookupMap }  from '../utils';
-import { utxosToLookupMap, derivePathAsString, toAccountLevel }  from '../utils';
+import { utxosToLookupMap, derivePathAsString, verifyFromBip44Root }  from '../utils';
 import type {
   SendFunc,
   TxBodiesFunc,
@@ -32,7 +32,7 @@ import type {
   SignTransactionResponse as LedgerSignTxResponse,
   Witness
 } from '@cardano-foundation/ledgerjs-hw-app-cardano';
-import { makeCardanoBIP44Path } from 'yoroi-extension-ledger-connect-handler';
+import { toDerivationPathString } from 'yoroi-extension-ledger-connect-handler';
 import type {
   $CardanoSignTransaction,
   CardanoInput,
@@ -125,13 +125,9 @@ function _transformToTrezorInputs(
     const utxo = utxoMap[input.id][input.index];
     const addressingInfo = addressMap.get(utxo.receiver);
     if (addressingInfo == null) throw new Error(`${nameof(_transformToTrezorInputs)} should never happen`);
-    const { addressing } = toAccountLevel(addressingInfo);
+    verifyFromBip44Root(addressingInfo);
     return {
-      path: derivePathAsString(
-        addressing.path[0],
-        addressing.path[1],
-        addressing.path[2]
-      ),
+      path: toDerivationPathString(addressingInfo.addressing.path),
       prev_hash: input.id,
       prev_index: input.index,
       type: 0
@@ -146,14 +142,10 @@ function _generateTrezorOutputs(
   return txOutputs.map(txOutput => {
     const change = changeAddr.find(addr => addr.address === txOutput.address);
     if (change != null) {
-      const { addressing } = toAccountLevel({ addressing: change.addressing });
+      verifyFromBip44Root({ addressing: change.addressing });
       return {
         amount: txOutput.value.toString(),
-        path: derivePathAsString(
-          addressing.path[0],
-          addressing.path[1],
-          addressing.path[2],
-        )
+        path: toDerivationPathString(change.addressing.path),
       };
     }
     return {
@@ -219,15 +211,11 @@ function _transformToLedgerInputs(
     const utxo = utxoMap[input.id][input.index];
     const addressingInfo = addressMap.get(utxo.receiver);
     if (addressingInfo == null) throw new Error(`${nameof(_transformToLedgerInputs)} should never happen`);
-    const { addressing } = toAccountLevel(addressingInfo);
+    verifyFromBip44Root(addressingInfo);
     return {
       txDataHex: txDataHexMap[input.id],
       outputIndex: input.index,
-      path: makeCardanoBIP44Path(
-        addressing.path[0],
-        addressing.path[1],
-        addressing.path[2]
-      ),
+      path: addressingInfo.addressing.path,
     };
   });
 }
@@ -240,13 +228,9 @@ function _transformToLedgerOutputs(
     const amountStr = txOutput.value.toString();
     const change = changeAddr.find(addr => addr.address === txOutput.address);
     if (change != null) {
-      const { addressing } = toAccountLevel({ addressing: change.addressing });
+      verifyFromBip44Root({ addressing: change.addressing });
       return {
-        path: makeCardanoBIP44Path(
-          addressing.path[0],
-          addressing.path[1],
-          addressing.path[2],
-        ),
+        path: change.addressing.path,
         amountStr,
       };
     }
