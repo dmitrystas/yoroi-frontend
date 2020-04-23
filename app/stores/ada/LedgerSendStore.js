@@ -8,10 +8,6 @@ import type {
 
 import Store from '../base/Store';
 import environment from '../../environment';
-import {
-  Logger,
-  stringifyError
-} from '../../utils/logging';
 
 import LocalizedRequest from '../lib/LocalizedRequest';
 import LocalizableError from '../../i18n/LocalizableError';
@@ -38,6 +34,7 @@ import {
 import {
   Logger,
   stringifyData,
+  stringifyError,
 } from '../../utils/logging';
 
 import {
