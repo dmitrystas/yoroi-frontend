@@ -68,8 +68,6 @@ export default class TopbarStore extends Store {
 
     return [
       this._genTopCategory(),
-      ...(isTrezorT ? [WITH_TREZOR_T] : []),
-      ...(isNano ? [WITH_LEDGER_NANO] : []),
       SETTINGS,
       ...(canTransfer ? [TRANSFER_PAGE] : []),
       ...(environment.isTest() ? [NOTICE_BOARD] : []), // Temporarily Hide
