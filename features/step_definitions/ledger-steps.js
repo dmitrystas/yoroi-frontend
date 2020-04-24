@@ -1,9 +1,6 @@
 // @flow
 
-import { When, Then } from 'cucumber';
-import { By } from 'selenium-webdriver';
-import i18n from '../support/helpers/i18n-helpers';
-import { expect } from 'chai';
+import { When, } from 'cucumber';
 
 When(/^I restore a Ledger device$/, async function () {
   await this.click('.WalletAdd_btnConnectHW');
