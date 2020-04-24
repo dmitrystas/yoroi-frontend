@@ -44,8 +44,8 @@ console.debug('[CS-LEDGER] Loading');
         const payload /*: ExtendedPublicKeyResp */ = {
           ePublicKey: {
             // from ledger-wallet mnemonic
-            publicKeyHex: '95d43af0023cfbfa7acc782b8aa7090b48c021a3b198930dd5ef6e2619aa41e2',
-            chainCodeHex: '958339435e719033a8f56ee395074d0347eaf9c9d2fdbb76de210d90dd504636',
+            publicKeyHex: 'd54844edc8ffe0f41ec686a2199f4d182dd477450ec2d5b251d877178f366b81',
+            chainCodeHex: 'd8b2aa0ca5ed670a252387c9d4c2f41946c2f760d118bec9b70b5fbabfef7fc6',
           },
           deviceVersion: {
             major: '1',
