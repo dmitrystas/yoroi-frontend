@@ -8,7 +8,7 @@ import type {
   BaseSignRequest,
 } from '../types';
 import type { UtxoLookupMap }  from '../utils';
-import { utxosToLookupMap, derivePathAsString, verifyFromBip44Root }  from '../utils';
+import { utxosToLookupMap, verifyFromBip44Root }  from '../utils';
 import type {
   SendFunc,
   TxBodiesFunc,
