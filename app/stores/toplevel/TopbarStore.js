@@ -13,10 +13,6 @@ import {
   SETTINGS,
   NOTICE_BOARD,
 } from '../../config/topbarConfig';
-import {
-  isTrezorTWallet,
-  isLedgerNanoWallet,
-} from '../../api/ada/lib/storage/models/ConceptualWallet/index';
 import { Bip44Wallet } from '../../api/ada/lib/storage/models/Bip44Wallet/wrapper';
 
 export default class TopbarStore extends Store {
@@ -51,14 +47,7 @@ export default class TopbarStore extends Store {
   @computed get categories(): Array<Category> {
     const { wallets } = this.stores;
 
-    let isTrezorT = false;
-    let isNano = false;
     const selected = wallets.selected;
-    if (selected != null) {
-      const conceptualWallet = selected.getParent();
-      isTrezorT = isTrezorTWallet(conceptualWallet);
-      isNano = isLedgerNanoWallet(conceptualWallet);
-    }
 
     // recall: legacy bip44 wallets can't receive in Shelley era
     const canTransfer = !environment.isShelley() ||
